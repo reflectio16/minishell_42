@@ -8,68 +8,59 @@ elements of shell commands.*/
 and converts it into a linked list of tokens with specific types.*/
 
 
-// Helper function
-static int is_special(char c)
-{
-    return (c == '|' || c == '<' || c == '>');
-}
-
 // Handles the special characters identified by is_special():
-static void add_special_token(t_token **tokens, const char *input, int *i)
+
+bool add_special_token(t_token **tokens, const char *input, int *i)
 {
+    char *val = NULL;
+    t_token_type type;
+
     if (input[*i] == '|')
-        add_token(tokens, new_token(ft_strdup("|"), T_PIPE));
+        val = ft_strdup("|"), type = T_PIPE, (*i)++;
     else if (input[*i] == '<')
     {
         if (input[*i + 1] == '<')
-        {
-            add_token(tokens, new_token(ft_strdup("<<"), T_HEREDOC));
-            (*i)++;
-        }
+            val = ft_strdup("<<"), type = T_HEREDOC, (*i)+=2;
         else
-            add_token(tokens, new_token(strdup("<"), T_REDIR_IN));
+            val = ft_strdup("<"), type = T_REDIR_IN, (*i)++;
     }
     else if (input[*i] == '>')
     {
         if (input[*i + 1] == '>')
-        {
-            add_token(tokens, new_token(ft_strdup(">>"), T_APPEND));
-            (*i)++;
-        }
+            val = ft_strdup(">>"), type = T_APPEND, (*i)+=2;
         else
-            add_token(tokens, new_token(ft_strdup(">"), T_REDIR_OUT));
+            val = ft_strdup(">"), type = T_REDIR_OUT, (*i)++;
     }
-    (*i)++;
+
+    if (!val)
+        return false;
+    if (!append_token(tokens, val, type))
+        return false;
+    return (true);
 }
+
 
 // Extract a word token, respecting quotes
 
-static char *extract_word(const char *input, int *i)
+char *extract_word(const char *input, int *i)
 {
-    int  start;
-    int  in_quote = 0;
+    int start = *i;
+    int in_quote = 0;
     char quote_char = 0;
 
-    start = *i;
     while (input[*i])
     {
-        if (!in_quote && is_special(input[*i]))
+        if (!in_quote && is_special_char(input[*i]))
             break;
-        if (!in_quote && (input[*i] == ' ' || input[*i] == '\t'))
+        if (!in_quote && is_space(input[*i]))
             break;
         if (!in_quote && (input[*i] == '"' || input[*i] == '\''))
         {
             in_quote = 1;
             quote_char = input[*i];
-            (*i)++; // skip opening quote
-            continue;
         }
         else if (in_quote && input[*i] == quote_char)
-        {
             in_quote = 0;
-            (*i)++; // skip closing quote
-            continue;
-        }
         (*i)++;
     }
     return ft_substr(input, start, *i - start);
@@ -77,28 +68,32 @@ static char *extract_word(const char *input, int *i)
 
 
 // Main lexer function.This is the core state machine that processes the input character by character:
-t_token *lexer(char *input)
+bool lexer(t_token **tokens, char *input)
 {
-    t_token *tokens;
-    int     i;
-    char    *word;
-    char    *clean;
+    int i;
 
-    tokens = NULL;
+    *tokens = NULL;
     i = 0;
     while (input[i])
     {
-        if (input[i] == ' ' || input[i] == '\t')
+        if (is_space(input[i]))
             i++;
-        else if (is_special(input[i]))
-            add_special_token(&tokens, input, &i);
+        else if (is_special_char(input[i]))
+        {
+            if (!add_special_token(tokens, input, &i))
+            {
+                free_tokens(*tokens);
+                return false;
+            }
+        }
         else
         {
-            word = extract_word(input, &i);
-            clean = remove_quotes(word);
-            free(word);
-            add_token(&tokens, new_token(clean, T_WORD));
+            if (!add_word_token(tokens, input, &i))
+            {
+                free_tokens(*tokens);
+                return false;
+            }
         }
     }
-    return (tokens);
+    return true;
 }

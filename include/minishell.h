@@ -59,17 +59,22 @@ typedef struct s_cmd
 }   t_cmd;
 
 
-
 /* lexer.c */
-t_token	*lexer(char *input);
-void	print_tokens(t_token *tokens);
-void	free_tokens(t_token *tokens);
+bool    lexer(t_token **tokens, char *input);
+char    *extract_word(const char *input, int *i);
+bool    add_special_token(t_token **tokens, const char *input, int *i);
 
 /* utils */
-t_token	*new_token(char *val, t_token_type type);
+t_token *new_token(char *value, t_token_type type);
 void	add_token(t_token **lst, t_token *new);
-char    *remove_quotes(const char *str);
 void    free_tokens(t_token *tokens);
+int     is_special_char(char c);
+int     is_space(char c);
+char    *remove_quotes(char *str);
+bool    add_word_token(t_token **tokens, const char *input, int *i);
+bool    append_token(t_token **tokens, char *value, t_token_type type);
+void	print_tokens(t_token *tokens);
+void	free_tokens(t_token *tokens);
 
 /* parcer.c */
 t_cmd	*parse_tokens(t_token *tokens);
