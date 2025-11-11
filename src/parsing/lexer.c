@@ -42,12 +42,47 @@ static void add_special_token(t_token **tokens, const char *input, int *i)
     (*i)++;
 }
 
+// Extract a word token, respecting quotes
+
+static char *extract_word(const char *input, int *i)
+{
+    int  start;
+    int  in_quote = 0;
+    char quote_char = 0;
+
+    start = *i;
+    while (input[*i])
+    {
+        if (!in_quote && is_special(input[*i]))
+            break;
+        if (!in_quote && (input[*i] == ' ' || input[*i] == '\t'))
+            break;
+        if (!in_quote && (input[*i] == '"' || input[*i] == '\''))
+        {
+            in_quote = 1;
+            quote_char = input[*i];
+            (*i)++; // skip opening quote
+            continue;
+        }
+        else if (in_quote && input[*i] == quote_char)
+        {
+            in_quote = 0;
+            (*i)++; // skip closing quote
+            continue;
+        }
+        (*i)++;
+    }
+    return ft_substr(input, start, *i - start);
+}
+
+
 // Main lexer function.This is the core state machine that processes the input character by character:
 t_token *lexer(char *input)
 {
     t_token *tokens;
     int     i;
-    int     start;
+    char    *word;
+    char    *clean;
 
     tokens = NULL;
     i = 0;
@@ -59,37 +94,11 @@ t_token *lexer(char *input)
             add_special_token(&tokens, input, &i);
         else
         {
-            start = i;
-            while (input[i] && !is_special(input[i]) && input[i] != ' ' && input[i] != '\t')
-                i++;
-            add_token(&tokens, new_token(ft_substr(input, start, i), T_WORD));
+            word = extract_word(input, &i);
+            clean = remove_quotes(word);
+            free(word);
+            add_token(&tokens, new_token(clean, T_WORD));
         }
     }
     return (tokens);
-}
-
-// Debug function to display the token list
-void    print_tokens(t_token *tokens)
-{
-    while (tokens)
-    {
-        const char *type_str[]
-        = {"WORD", "PIPE", "REDIR_IN", "REDIR_OUT", "APPEND", "HEREDOC"};
-        printf("[%s] \"%s\"\n", type_str[tokens->type], tokens->value);
-        tokens = tokens->next;
-    }
-}
-
-// Clean up allocated memory for the token list
-void    free_tokens(t_token *tokens)
-{
-    t_token *tmp;
-
-    while (tokens)
-    {
-        tmp = tokens->next;
-        free (tokens->value);
-        free (tokens);
-        tokens = tmp;
-    }
 }

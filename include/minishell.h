@@ -68,6 +68,8 @@ void	free_tokens(t_token *tokens);
 /* utils */
 t_token	*new_token(char *val, t_token_type type);
 void	add_token(t_token **lst, t_token *new);
+char    *remove_quotes(const char *str);
+void    free_tokens(t_token *tokens);
 
 /* parcer.c */
 t_cmd	*parse_tokens(t_token *tokens);
@@ -78,9 +80,9 @@ void	handle_redir_token(t_cmd *cmd, t_token **token);
 void	handle_pipe_token(t_cmd **current);
 void	init_cmd(t_cmd **cmd_head, t_cmd **current);
 
-
-
-
+/* debug */
+void    print_redirs(t_redir *r);
+void    print_commands(t_cmd *cmd);
 
 
 

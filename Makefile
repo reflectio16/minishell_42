@@ -20,8 +20,12 @@ UTILS_DIR	=	$(SRC_DIR)/utils
 
 # Source files
 SRC_FILES	=	$(SRC_DIR)/main.c \
+				$(PARSING_DIR)/parser.c \
+				$(PARSING_DIR)/parse_input.c \
 				$(PARSING_DIR)/lexer.c \
 				$(UTILS_DIR)/lexer_utils.c \
+				$(UTILS_DIR)/debug_print.c \
+				$(UTILS_DIR)/cleanup.c
 
 # Object files
 OBJS		=	$(SRC_FILES:.c=.o)
