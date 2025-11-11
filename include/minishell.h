@@ -29,7 +29,7 @@
 
 typedef enum e_token_type
 {
-    T_WORD,         // Strings, posibly quoted)
+    T_WORD,         // Strings, posibly quoted
     T_PIPE,         // |
     T_REDIR_IN,     // <
     T_REDIR_OUT,    // >
@@ -44,15 +44,21 @@ typedef struct s_token
     struct s_token  *next;      // Pointer to the next token in the list
 }   t_token;
 
+typedef struct s_redir
+{
+    int             type;       // REDIR_IN, REDIR_OUT, APPEND, HEREDOC
+    char            *filename;
+    struct s_redir  *next;
+}   t_redir;
+
 typedef struct s_cmd
 {
-    char            **argv;     // ["echo", "hello"]
-    char            *infile;    // "<" or "<<"
-    char            *outfile;   // ">" or ">>"
-    int             append;     // 1 if >>
-    int             heredoc;    // 1 if <<
-    struct s_cmd    *next;      // for pipes
+    char            **argv;     // e.g. ["ls", "-l", NULL]
+    t_redir         *redirs;    // linked list of redirections
+    struct s_cmd    *next;      // next command in pipeline
 }   t_cmd;
+
+
 
 /* lexer.c */
 t_token	*lexer(char *input);
