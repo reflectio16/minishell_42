@@ -69,7 +69,14 @@ void	free_tokens(t_token *tokens);
 t_token	*new_token(char *val, t_token_type type);
 void	add_token(t_token **lst, t_token *new);
 
+/* parcer.c */
+t_cmd	*parse_tokens(t_token *tokens);
 
+/* parse_input.c */
+void	handle_word_token(t_cmd *cmd, t_token *token);
+void	handle_redir_token(t_cmd *cmd, t_token **token);
+void	handle_pipe_token(t_cmd **current);
+void	init_cmd(t_cmd **cmd_head, t_cmd **current);
 
 
 
