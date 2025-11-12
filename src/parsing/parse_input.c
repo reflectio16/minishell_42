@@ -61,13 +61,17 @@ loop in parse_tokens():*/
 
 void    init_cmd(t_cmd **cmd_head, t_cmd **current)
 {
-    if (!*current)
+    if (!*cmd_head)
     {
-        *current = ft_calloc(1, sizeof(t_cmd));
-        if (!*cmd_head)
-            *cmd_head = *current;
+        *cmd_head = new_cmd();
+        *current = *cmd_head;
+    }
+    else if (!*current)
+    {
+        *current = new_cmd();
     }
 }
+
 
 
 

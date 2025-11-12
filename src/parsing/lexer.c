@@ -1,13 +1,5 @@
 #include "../include/minishell.h"
 
-/*Whole page is a lexer (lexical analyzer). It breaks input strings 
-into tokens that represent the basic syntactic 
-elements of shell commands.*/
-
-/*The lexer takes a raw input string like "ls -l > file.txt" 
-and converts it into a linked list of tokens with specific types.*/
-
-
 // Handles the special characters identified by is_special():
 
 bool add_special_token(t_token **tokens, const char *input, int *i)

@@ -26,7 +26,8 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(UTILS_DIR)/lexer_utils.c \
 				$(UTILS_DIR)/debug_print.c \
 				$(UTILS_DIR)/cleanup.c \
-				$(UTILS_DIR)/general.c
+				$(UTILS_DIR)/general.c \
+				$(UTILS_DIR)/parser_utils.c
 
 # Object files
 OBJS		=	$(SRC_FILES:.c=.o)

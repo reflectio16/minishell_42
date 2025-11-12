@@ -68,7 +68,9 @@ char *remove_quotes(char *str)
 
 bool append_token(t_token **tokens, char *value, t_token_type type)
 {
-    t_token *tok = new_token(value, type);
+    t_token *tok;
+    
+    tok = new_token(value, type);
     if (!tok)
         return false;
     add_token(tokens, tok);
@@ -77,10 +79,13 @@ bool append_token(t_token **tokens, char *value, t_token_type type)
 
 bool add_word_token(t_token **tokens, const char *input, int *i)
 {
-    char *word = extract_word(input, i);
+    char    *word;
+    char    *clean;
+    
+    word = extract_word(input, i);
     if (!word)
         return false;
-    char *clean = remove_quotes(word);
+    clean = remove_quotes(word);
     if (!clean)
         return false;
     if (!append_token(tokens, clean, T_WORD))

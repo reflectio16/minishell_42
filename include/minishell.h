@@ -75,6 +75,9 @@ bool    add_word_token(t_token **tokens, const char *input, int *i);
 bool    append_token(t_token **tokens, char *value, t_token_type type);
 void	print_tokens(t_token *tokens);
 void	free_tokens(t_token *tokens);
+t_cmd   *new_cmd(void);
+void    add_arg(t_cmd *cmd, char *arg);
+void    add_redir(t_cmd *cmd, t_token_type type, char *file);
 
 /* parcer.c */
 t_cmd	*parse_tokens(t_token *tokens);
