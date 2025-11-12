@@ -6,23 +6,9 @@ a command's argument list (argv array).
 
 void    handle_word_token(t_cmd *cmd, t_token *token)
 {
-    int     argc;
-    char    **new_argv;
-
-    argc = 0;
-    while (cmd->argv && cmd->argv[argc])
-        argc++;
-    new_argv = malloc(sizeof(char *) * (argc + 2));
-    if (!new_argv)
+    if (!cmd || !token)
         return ;
-    if (cmd->argv)
-    {
-        ft_memcpy(new_argv, cmd->argv, sizeof(char *) * argc);
-        free(cmd->argv);
-    }
-    new_argv[argc] = ft_strdup(token->value);
-    new_argv[argc + 1] = NULL;
-    cmd->argv = new_argv;
+    add_arg(cmd, token->value);
 }
 
 /*This function processes redirection tokens (<, >, >>, <<) 
@@ -30,19 +16,13 @@ and creates redirection nodes in the command structure.*/
 
 void    handle_redir_token(t_cmd *cmd, t_token **token)
 {
-    t_redir *new;
-
-    new = ft_calloc(1, sizeof(t_redir));
-    if (!new)
+    t_token  *t;
+    
+    t = *token;
+    if (!cmd || !t || !t->next)
         return ;
-    new->type = (*token)->type;
-    if ((*token)->next && (*token)->next->type == T_WORD)
-        new->filename = ft_strdup((*token)->next->value);
-    else
-        printf("syntax error: redirection without filename\n");
-    new->next = cmd->redirs;
-    cmd->redirs = new;
-    *token = (*token)->next;
+    add_redir(cmd, t->type, t->next->value);
+    *token = t->next;
 }
 
 /*This function handles pipe tokens (|) 
@@ -50,8 +30,15 @@ by creating a new command in the pipeline.*/
 
 void    handle_pipe_token(t_cmd **current)
 {
-    (*current)-> next = ft_calloc(1, sizeof(t_cmd));
-    *current = (*current)->next;
+    t_cmd   *new;
+
+    if (!current || !*current)
+        return ;
+    new = new_cmd();
+    if (!new)
+        return ;
+    (*current)->next = new;
+    *current = new;
 }
 
 /*This function initializes a new command node when needed, 
