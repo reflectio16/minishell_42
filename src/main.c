@@ -36,7 +36,7 @@ int	main(int argc, char **argv, char **envp)
 		execute_pipeline(cmds, envp);
 		// Free all allocated memory
 		free_tokens(tokens);
-		free_commands(cmds);
+		free_cmds(cmds);
 		free(input);
 	}
 	return (0);
