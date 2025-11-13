@@ -26,43 +26,6 @@ static int	open_outfile(t_redir *r, int flags)
 	return (fd);
 }
 
-static int handle_here_doc(char *limiter)
-{
-    int fd[2];
-    pid_t pid;
-
-    if (pipe(fd) == -1)
-        error("pipe");
-
-    pid = fork();
-    if (pid == -1)
-        error("fork");
-
-    if (pid == 0)
-        heredoc_child(fd, limiter);
-    else
-    {
-        close(fd[1]);
-        waitpid(pid, NULL, 0);
-        return fd[0];
-    }
-    return -1; // should never reach here
-}
-
-static int	open_heredoc(t_redir *r)
-{
-	int	fd = handle_here_doc(r->filename);
-	if (fd == -1)
-		perror("heredoc");
-	else
-	{
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	return (fd);
-}
-
-
 int	apply_redirections(t_cmd *cmd)
 {
 	t_redir	*r;

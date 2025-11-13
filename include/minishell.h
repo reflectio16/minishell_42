@@ -79,6 +79,8 @@ void	free_tokens(t_token *tokens);
 t_cmd   *new_cmd(void);
 void    add_arg(t_cmd *cmd, char *arg);
 void    add_redir(t_cmd *cmd, t_token_type type, char *file);
+/* Errors*/
+void	error(char *msg);
 
 /* parcer.c */
 t_cmd	*parse_tokens(t_token *tokens);
@@ -93,10 +95,13 @@ void	init_cmd(t_cmd **cmd_head, t_cmd **current);
 void    execute_pipeline(t_cmd *cmds, char **envp);
 int     apply_redirections(t_cmd *cmd);
 void	execute_command(t_cmd *cmd, char **envp, int *prev_fd);
+int     open_heredoc(t_redir *r);
 
 /* debug */
 void    print_redirs(t_redir *r);
 void    print_commands(t_cmd *cmd);
+
+
 
 
 
