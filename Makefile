@@ -26,6 +26,7 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(EXEC_DIR)/execute_pipeline.c \
 				$(EXEC_DIR)/apply_redirections.c \
 				$(EXEC_DIR)/execute_cmd.c \
+				$(EXEC_DIR)/heredoc.c \
 				$(UTILS_DIR)/lexer_utils.c \
 				$(UTILS_DIR)/debug_print.c \
 				$(UTILS_DIR)/cleanup.c \

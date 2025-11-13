@@ -39,5 +39,6 @@ int	main(int argc, char **argv, char **envp)
 		free_cmds(cmds);
 		free(input);
 	}
+	rl_clear_history();
 	return (0);
 }

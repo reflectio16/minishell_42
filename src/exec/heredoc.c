@@ -1,5 +1,30 @@
 #include "../include/minishell.h"
 
+static char	*read_here_doc(void)
+{
+	char	*buff;
+	char	c;
+	int		i;
+	int		rd;
+
+	i = 0;
+	buff = malloc(10000);
+	if (!buff)
+		return (NULL);
+	rd = read(0, &c, 1);
+	while (rd > 0 && i < 9999)
+	{
+		buff[i++] = c;
+		if (c == '\n')
+			break ;
+		rd = read(0, &c, 1);
+	}
+	if (rd <= 0 && i == 0)
+		return (free(buff), NULL);
+	buff[i] = '\0';
+	return (buff);
+}
+
 static void	heredoc_child(int fd[2], char *limiter)
 {
 	char	*line;
