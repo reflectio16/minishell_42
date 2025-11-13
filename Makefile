@@ -23,6 +23,9 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(PARSING_DIR)/parser.c \
 				$(PARSING_DIR)/parse_input.c \
 				$(PARSING_DIR)/lexer.c \
+				$(EXEC_DIR)/execute_pipeline.c \
+				$(EXEC_DIR)/apply_redirections.c \
+				$(EXEC_DIR)/execute_cmd.c \
 				$(UTILS_DIR)/lexer_utils.c \
 				$(UTILS_DIR)/debug_print.c \
 				$(UTILS_DIR)/cleanup.c \

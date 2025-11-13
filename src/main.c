@@ -1,17 +1,18 @@
 #include "../include/minishell.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
 	t_token	*tokens;
 	t_cmd	*cmds;
 
+	(void)argc;
+	(void)argv;
 	while (1)
 	{
 		input = readline("minishell> ");
 		if (!input)
 			break ;
-
 		if (*input)
 			add_history(input); // store nonempty commands
 		tokens = NULL;
@@ -28,12 +29,14 @@ int	main(void)
 			fprintf(stderr, "Error: failed to parse tokens\n");
 			free_tokens(tokens);
 			free(input);
-			continue;
+			continue ;
 		}
 		print_commands(cmds);
+		
+		execute_pipeline(cmds, envp);
 		// Free all allocated memory
 		free_tokens(tokens);
-		//free_commands(cmds); // TO DO. we need a function to free t_cmd + redirs
+		free_commands(cmds);
 		free(input);
 	}
 	return (0);

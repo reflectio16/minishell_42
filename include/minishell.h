@@ -68,6 +68,7 @@ bool    add_special_token(t_token **tokens, const char *input, int *i);
 t_token *new_token(char *value, t_token_type type);
 void	add_token(t_token **lst, t_token *new);
 void    free_tokens(t_token *tokens);
+void	free_cmds(t_cmd *cmd);
 int     is_special_char(char c);
 int     is_space(char c);
 char    *remove_quotes(char *str);
@@ -87,6 +88,11 @@ void	handle_word_token(t_cmd *cmd, t_token *token);
 void	handle_redir_token(t_cmd *cmd, t_token **token);
 void	handle_pipe_token(t_cmd **current);
 void	init_cmd(t_cmd **cmd_head, t_cmd **current);
+
+/* Execution */
+void    execute_pipeline(t_cmd *cmds, char **envp);
+int     apply_redirections(t_cmd *cmd);
+void	execute_command(t_cmd *cmd, char **envp, int *prev_fd);
 
 /* debug */
 void    print_redirs(t_redir *r);
