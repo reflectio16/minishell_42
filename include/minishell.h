@@ -79,6 +79,10 @@ void	free_tokens(t_token *tokens);
 t_cmd   *new_cmd(void);
 void    add_arg(t_cmd *cmd, char *arg);
 void    add_redir(t_cmd *cmd, t_token_type type, char *file);
+int     is_builtin(char *cmd);
+int     builtin_is_parent(char *cmd_name);
+int     exec_builtin_child(t_cmd *cmd);
+
 /* Errors*/
 void	error(char *msg);
 
@@ -96,6 +100,10 @@ void    execute_pipeline(t_cmd *cmds, char **envp);
 int     apply_redirections(t_cmd *cmd);
 void	execute_command(t_cmd *cmd, char **envp, int *prev_fd);
 int     open_heredoc(t_redir *r);
+
+/* Built-in */
+void    echo_print_args(char **argv, int i);
+int     builtin_echo(char **argv);
 
 /* debug */
 void    print_redirs(t_redir *r);

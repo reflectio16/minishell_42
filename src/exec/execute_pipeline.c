@@ -2,8 +2,9 @@
 
 void execute_pipeline(t_cmd *cmds, char **envp)
 {
-    int prev_fd = -1;
-
+    int prev_fd;
+    
+    prev_fd= -1;
     while (cmds)
     {
         execute_command(cmds, envp, &prev_fd);

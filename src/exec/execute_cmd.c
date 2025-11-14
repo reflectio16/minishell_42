@@ -17,11 +17,17 @@ static void	setup_pipes(t_cmd *cmd, int *prev_fd, int fd[2])
 
 static void	child_process(t_cmd *cmd, char **envp, int *prev_fd, int fd[2])
 {
-	(void)envp;
+	int	status;
 	
+	(void)envp;
 	setup_pipes(cmd, prev_fd, fd);
 	if (apply_redirections(cmd) == -1)
 		exit(1);
+	if (is_builtin(cmd->argv[0]))
+	{
+		status = exec_builtin_child(cmd);
+		exit(status);
+	}
 	execvp(cmd->argv[0], cmd->argv);
 	perror(cmd->argv[0]);
 	exit(127);
