@@ -20,7 +20,10 @@ UTILS_DIR	=	$(SRC_DIR)/utils
 
 # Source files
 SRC_FILES	=	$(SRC_DIR)/main.c \
+				$(BUILTIN_DIR)/ft_cd.c \
 				$(BUILTIN_DIR)/ft_echo.c \
+				$(BUILTIN_DIR)/ft_env.c \
+				$(BUILTIN_DIR)/ft_pwd.c \
 				$(PARSING_DIR)/parser.c \
 				$(PARSING_DIR)/parse_input.c \
 				$(PARSING_DIR)/lexer.c \

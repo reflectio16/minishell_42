@@ -61,13 +61,6 @@ typedef struct s_cmd
     struct s_cmd    *next;      // next command in pipeline
 }   t_cmd;
 
-typedef struct s_env
-{
-    char            *key;
-    char            *value;
-    struct s_env    *next;
-}   t_env;
-
 
 /* lexer.c */
 bool    lexer(t_token **tokens, char *input);
@@ -91,7 +84,7 @@ void    add_arg(t_cmd *cmd, char *arg);
 void    add_redir(t_cmd *cmd, t_token_type type, char *file);
 int     is_builtin(char *cmd);
 int     builtin_is_parent(char *cmd_name);
-int     exec_builtin_child(t_cmd *cmd);
+int     exec_builtin_child(t_cmd *cmd, char **envp);
 // signals.c
 void    handle_sigint(int signo);
 
@@ -116,13 +109,13 @@ int     open_heredoc(t_redir *r);
 /* Built-in */
 void    echo_print_args(char **argv, int i);
 int     builtin_echo(char **argv);
+int     builtin_cd(char **argv, char **envp);
+int     builtin_pwd(char **argv);
+int     builtin_env(char **argv, char **envp);
 
 /* debug */
 void    print_redirs(t_redir *r);
 void    print_commands(t_cmd *cmd);
 
 
-
-
-
-# endif
+#endif

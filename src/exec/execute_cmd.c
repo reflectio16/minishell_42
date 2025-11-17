@@ -22,13 +22,12 @@ static void	child_process(t_cmd *cmd, char **envp, int *prev_fd, int fd[2])
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 
-	(void)envp;
 	setup_pipes(cmd, prev_fd, fd);
 	if (apply_redirections(cmd) == -1)
 		exit(1);
 	if (is_builtin(cmd->argv[0]))
 	{
-		status = exec_builtin_child(cmd);
+		status = exec_builtin_child(cmd, envp);
 		exit(status);
 	}
 	execvp(cmd->argv[0], cmd->argv);

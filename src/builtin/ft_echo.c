@@ -7,9 +7,9 @@ void    echo_print_args(char **argv, int i)
 {
     while (argv[i])
     {
-        write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));
+        printf("%s", argv[i]);
         if (argv[i + 1])
-            write(STDOUT_FILENO, " ", 1);
+            printf(" ");
         i++;
     }
 }
@@ -17,24 +17,28 @@ void    echo_print_args(char **argv, int i)
 int builtin_echo(char **argv)
 {
     int i;
-    int j;
-    int newline;
+    int n_flag;
 
     i = 1;
-    newline = 1;
+    n_flag = 0;
     fprintf(stderr, "[DEBUG] builtin echo executed\n");
-    while (argv[i] && argv[i][0] == '-' && argv[i][1] == 'n')
+    if (!argv[1])
     {
-        j = 1;
-        while (argv[i][j] == 'n')
-            j++;
-        if (argv[i][j] != '\0')
+        printf("\n");
+        return (0);
+    }
+    while (argv[i] && ft_strncmp(argv[i], "-n", 2) == 0)
+    {
+        if (ft_strncmp(argv[i], "-n", 2) == 0)
+        {
+            n_flag = 1;
+            i++;
+        }
+        else
             break ;
-        newline = 0;
-        i++;
     }
     echo_print_args(argv, i);
-    if (newline)
-        write(STDOUT_FILENO, "\n", 1);
+    if (!n_flag)
+        printf("\n");
     return (0);
 }

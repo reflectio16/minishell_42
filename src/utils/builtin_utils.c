@@ -36,20 +36,18 @@ int builtin_is_parent(char *cmd_name)
     return (0);
 }
 
-/* run builtin inside a child process (returns status) */
-
-int exec_builtin_child(t_cmd *cmd)
+int exec_builtin_child(t_cmd *cmd, char **envp)
 {
     if (!cmd || !cmd->argv || !cmd->argv[0])
         return (1);
     if (ft_strncmp(cmd->argv[0], "echo", 5) == 0)
         return (builtin_echo(cmd->argv));
-    /*if (ft_strncmp(cmd->argv[0], "pwd", 4) == 0)
-        return (builtin_pwd(cmd->argv)); // TO DO: implement builtin_pwd similarly
+    if (ft_strncmp(cmd->argv[0], "pwd", 4) == 0)
+        return (builtin_pwd(cmd->argv));
     if (ft_strncmp(cmd->argv[0], "env", 4) == 0)
-        return (builtin_env(cmd->argv)); // TO DO: * for parent-only builtins, fallback here if executed in child
+        return (builtin_env(cmd->argv, envp));
     if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
-        return (builtin_cd(cmd->argv)); // TO DO: optional: implement fallback */
+        return (builtin_cd(cmd->argv, envp));
     return (127); // not found as builtin
 }
 
