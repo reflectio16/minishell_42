@@ -18,7 +18,10 @@ static void	setup_pipes(t_cmd *cmd, int *prev_fd, int fd[2])
 static void	child_process(t_cmd *cmd, char **envp, int *prev_fd, int fd[2])
 {
 	int	status;
-	
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+
 	(void)envp;
 	setup_pipes(cmd, prev_fd, fd);
 	if (apply_redirections(cmd) == -1)

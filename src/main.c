@@ -38,7 +38,17 @@ int	main(int argc, char **argv, char **envp)
 	//test_echo_builtin();
 	while (1)
 	{
+		signal(SIGINT, handle_sigint);
+		signal(SIGQUIT, SIG_IGN);
+
 		input = readline("minishell> ");
+		if (g_signal == SIGINT)
+		{
+    		g_signal = 0;
+			if (input)
+				free(input);
+    		continue ; // ignore input and redisplay prompt
+		}
 		if (!input)
 			break ;
 		if (*input)

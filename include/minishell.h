@@ -21,11 +21,14 @@
 # include <sys/stat.h>
 # include <limits.h>
 # include <fcntl.h>
+# include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../Libft/libft.h"
 # include "../Libft/get_next_line.h"
 
+extern volatile sig_atomic_t g_signal;
+extern int g_exit_status;  
 
 typedef enum e_token_type
 {
@@ -58,6 +61,13 @@ typedef struct s_cmd
     struct s_cmd    *next;      // next command in pipeline
 }   t_cmd;
 
+typedef struct s_env
+{
+    char            *key;
+    char            *value;
+    struct s_env    *next;
+}   t_env;
+
 
 /* lexer.c */
 bool    lexer(t_token **tokens, char *input);
@@ -82,6 +92,8 @@ void    add_redir(t_cmd *cmd, t_token_type type, char *file);
 int     is_builtin(char *cmd);
 int     builtin_is_parent(char *cmd_name);
 int     exec_builtin_child(t_cmd *cmd);
+// signals.c
+void    handle_sigint(int signo);
 
 /* Errors*/
 void	error(char *msg);
