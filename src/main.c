@@ -36,15 +36,19 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	//test_echo_builtin();
+	g_shell = malloc(sizeof(t_shell));
+	if (!g_shell)
+		return (1);
 	while (1)
 	{
 		signal(SIGINT, handle_sigint);
 		signal(SIGQUIT, SIG_IGN);
 
+		g_signal = 0;
 		input = readline("minishell> ");
 		if (g_signal == SIGINT)
 		{
-    		g_signal = 0;
+    		g_shell->exit_status = 130;
 			if (input)
 				free(input);
     		continue ; // ignore input and redisplay prompt
@@ -69,7 +73,7 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue ;
 		}
-		print_commands(cmds);
+		//print_commands(cmds);
 		
 		execute_pipeline(cmds, envp);
 		// Free all allocated memory
@@ -78,5 +82,7 @@ int	main(int argc, char **argv, char **envp)
 		free(input);
 	}
 	rl_clear_history();
+	if (g_shell)
+		free(g_shell);
 	return (0);
 }

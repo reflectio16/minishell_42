@@ -44,7 +44,7 @@ static char *get_cd_path(char **argv)
 {
     char    *path;
 
-    if (!argv[1] || argv[1][0] == '~')
+    if (!argv[1] || ft_strncmp(argv[1], "~", 1) == 0)
     {
         path = getenv("HOME");
         if (!path)
@@ -65,6 +65,11 @@ static char *get_cd_path(char **argv)
     }
     else
         path = argv[1];
+    if (chdir(path) != 0)
+	{
+		perror("minishell: cd");
+		return (NULL);
+	}
     return (path);
 }
 
@@ -88,3 +93,4 @@ int builtin_cd(char **argv, char **envp)
     }
     return (update_pwd_env(envp));
 }
+

@@ -48,6 +48,23 @@ int exec_builtin_child(t_cmd *cmd, char **envp)
         return (builtin_env(cmd->argv, envp));
     if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
         return (builtin_cd(cmd->argv, envp));
-    return (127); // not found as builtin
+    return (127);
+}
+
+int exec_builtin_parent(t_cmd *cmd, char **envp)
+{
+    if (!cmd || !cmd->argv || !cmd->argv[0])
+        return 1;
+
+    if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
+        return (builtin_cd(cmd->argv, envp));
+
+    /*if (ft_strncmp(cmd->argv[0], "export", 7) == 0)
+        return (builtin_export(cmd->argv, envp));
+
+    if (ft_strncmp(cmd->argv[0], "unset", 6) == 0)
+        return (builtin_unset(cmd->argv, envp));*/
+
+    return (127);
 }
 

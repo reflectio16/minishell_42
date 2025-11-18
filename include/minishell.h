@@ -27,8 +27,16 @@
 # include "../Libft/libft.h"
 # include "../Libft/get_next_line.h"
 
-extern volatile sig_atomic_t g_signal;
-extern int g_exit_status;  
+#define HEREDOC_BUF 1024
+
+typedef struct s_shell
+{
+    int exit_status;
+    pid_t   last_pid;
+}   t_shell;
+
+extern volatile sig_atomic_t g_signal; // The global to store signal number
+extern t_shell *g_shell;
 
 typedef enum e_token_type
 {
@@ -85,6 +93,8 @@ void    add_redir(t_cmd *cmd, t_token_type type, char *file);
 int     is_builtin(char *cmd);
 int     builtin_is_parent(char *cmd_name);
 int     exec_builtin_child(t_cmd *cmd, char **envp);
+int     exec_builtin_parent(t_cmd *cmd, char **envp);
+
 // signals.c
 void    handle_sigint(int signo);
 
