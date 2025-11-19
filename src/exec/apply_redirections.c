@@ -26,7 +26,7 @@ static int	open_outfile(t_redir *r, int flags)
 	return (fd);
 }
 
-int	apply_redirections(t_cmd *cmd)
+int	apply_redirections(t_cmd *cmd, t_shell *sh)
 {
 	t_redir	*r;
 	int		fd;
@@ -38,7 +38,7 @@ int	apply_redirections(t_cmd *cmd)
 		if (r->type == T_REDIR_IN)
 			fd = open_infile(r);
 		else if (r->type == T_HEREDOC)
-			fd = open_heredoc(r);
+			fd = open_heredoc(sh, r);
 		else if (r->type == T_REDIR_OUT)
 			fd = open_outfile(r, O_WRONLY | O_CREAT | O_TRUNC);
 		else if (r->type == T_APPEND)

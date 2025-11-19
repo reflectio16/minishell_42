@@ -29,14 +29,7 @@
 
 #define HEREDOC_BUF 1024
 
-typedef struct s_shell
-{
-    int exit_status;
-    pid_t   last_pid;
-}   t_shell;
-
 extern volatile sig_atomic_t g_signal; // The global to store signal number
-extern t_shell *g_shell;
 
 typedef enum e_token_type
 {
@@ -69,6 +62,12 @@ typedef struct s_cmd
     struct s_cmd    *next;      // next command in pipeline
 }   t_cmd;
 
+typedef struct s_shell
+{
+    char    **envp;
+    int     last_status;
+}   t_shell;
+
 
 /* lexer.c */
 bool    lexer(t_token **tokens, char *input);
@@ -87,13 +86,20 @@ bool    add_word_token(t_token **tokens, const char *input, int *i);
 bool    append_token(t_token **tokens, char *value, t_token_type type);
 void	print_tokens(t_token *tokens);
 void	free_tokens(t_token *tokens);
+void    free_shell(t_shell *sh);
+int     is_valid_key(const char *key);
 t_cmd   *new_cmd(void);
 void    add_arg(t_cmd *cmd, char *arg);
 void    add_redir(t_cmd *cmd, t_token_type type, char *file);
 int     is_builtin(char *cmd);
 int     builtin_is_parent(char *cmd_name);
-int     exec_builtin_child(t_cmd *cmd, char **envp);
-int     exec_builtin_parent(t_cmd *cmd, char **envp);
+int     exec_builtin_child(t_cmd *cmd, t_shell *sh);
+int     exec_builtin_parent(t_cmd *cmd, t_shell *sh);
+// env_utils.c
+char    *get_env_value(char **envp, const char *name);
+int     count_env_vars(char **envp);
+int     set_env_var(char ***envp, const char *key, const char *value);
+int     unset_env_var(char ***envp, const char *key);
 
 // signals.c
 void    handle_sigint(int signo);
@@ -111,17 +117,23 @@ void	handle_pipe_token(t_cmd **current);
 void	init_cmd(t_cmd **cmd_head, t_cmd **current);
 
 /* Execution */
-void    execute_pipeline(t_cmd *cmds, char **envp);
-int     apply_redirections(t_cmd *cmd);
-void	execute_command(t_cmd *cmd, char **envp, int *prev_fd);
-int     open_heredoc(t_redir *r);
+void    execute_pipeline(t_cmd *cmds, t_shell *sh);
+int     apply_redirections(t_cmd *cmd, t_shell *sh);
+void	execute_command(t_cmd *cmd, t_shell *sh, int *prev_fd);
+int     open_heredoc(t_shell *sh, t_redir *r);
 
 /* Built-in */
 void    echo_print_args(char **argv, int i);
 int     builtin_echo(char **argv);
-int     builtin_cd(char **argv, char **envp);
 int     builtin_pwd(char **argv);
-int     builtin_env(char **argv, char **envp);
+int     builtin_cd(char **argv, t_shell *sh);
+int     builtin_env(char **argv, t_shell *sh);
+int     builtin_export(char **argv, t_shell *sh);
+int     builtin_unset(char **argv, t_shell *sh);
+int     builtin_exit(char **argv, t_shell *sh);
+
+/* Shell */
+int     init_shell(t_shell *sh, char **envp);
 
 /* debug */
 void    print_redirs(t_redir *r);

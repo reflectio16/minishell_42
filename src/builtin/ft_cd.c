@@ -1,96 +1,79 @@
 #include "../include/minishell.h"
 
-static int update_pwd_env(char **envp)
+static char *env_get(t_shell *sh, const char *key)
+{
+    return (get_env_value(sh->envp, key));
+}
+
+static int env_set(t_shell *sh, const char *key, const char *value)
+{
+    return (set_env_var(&sh->envp, key, value));
+}
+
+static int update_pwd_env(t_shell *sh)
 {
     char    *cwd;
     char    *oldpwd;
-    int     i;
 
-    oldpwd = getenv("PWD");
     cwd = getcwd(NULL, 0);
     if (!cwd)
     {
         perror("cd");
-        return (0);
+        return (1);
     }
+    oldpwd = env_get(sh, "PWD");
     if (oldpwd)
-    {
-        i = 0;
-        while (envp[i])
-        {
-            if (ft_strncmp(envp[i], "OLDPWD=", 7) == 0)
-            {
-                envp[i] = ft_strjoin("OLDPWD=", oldpwd); // no free
-                break  ;
-            }
-            i++;
-        }
-    }
-    i = 0;
-    while (envp[i])
-    {
-        if (ft_strncmp(envp[i], "PWD=", 4) == 0)
-        {
-            envp[i] = ft_strjoin("PWD=", cwd);
-            break;
-        }
-        i++;
-    }
+        env_set(sh, "OLDPWD", oldpwd);
+    env_set(sh, "PWD", cwd);
     free(cwd);
     return (0);
 }
 
-static char *get_cd_path(char **argv)
+static char *resolve_cd_path(char **argv, t_shell *sh)
 {
-    char    *path;
+    char *path;
 
     if (!argv[1] || ft_strncmp(argv[1], "~", 1) == 0)
     {
-        path = getenv("HOME");
+        path = env_get(sh, "HOME");
         if (!path)
         {
             ft_putstr_fd("minishell: cd: HOME not set\n", 2);
             return (NULL);
         }
+        return (path);
     }
-    else if (ft_strncmp(argv[1], "-", 2) == 0)
+    if (ft_strncmp(argv[1], "-", 1) == 0)
     {
-        path = getenv("OLDPWD");
+        path = env_get(sh, "OLDPWD");
         if (!path)
         {
             ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
             return (NULL);
         }
         printf("%s\n", path);
+        return (path);
     }
-    else
-        path = argv[1];
-    if (chdir(path) != 0)
-	{
-		perror("minishell: cd");
-		return (NULL);
-	}
-    return (path);
+    return (argv[1]);
 }
 
-int builtin_cd(char **argv, char **envp)
+int builtin_cd(char **argv, t_shell *sh)
 {
-    char    *path;
+    char *path;
 
-    fprintf(stderr, "[DEBUG] builtin cd executed\n");
     if (argv[1] && argv[2])
     {
         ft_putstr_fd("minishell: cd: too many arguments\n", 2);
         return (1);
     }
-    path = get_cd_path(argv);
+    path = resolve_cd_path(argv, sh);
     if (!path)
         return (1);
+
     if (chdir(path) != 0)
     {
         perror("minishell: cd");
         return (1);
     }
-    return (update_pwd_env(envp));
+    return (update_pwd_env(sh));
 }
-

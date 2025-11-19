@@ -36,35 +36,33 @@ int builtin_is_parent(char *cmd_name)
     return (0);
 }
 
-int exec_builtin_child(t_cmd *cmd, char **envp)
+int exec_builtin_child(t_cmd *cmd, t_shell *sh)
 {
     if (!cmd || !cmd->argv || !cmd->argv[0])
         return (1);
     if (ft_strncmp(cmd->argv[0], "echo", 5) == 0)
-        return (builtin_echo(cmd->argv));
+        return builtin_echo(cmd->argv);
     if (ft_strncmp(cmd->argv[0], "pwd", 4) == 0)
-        return (builtin_pwd(cmd->argv));
+        return builtin_pwd(cmd->argv);
     if (ft_strncmp(cmd->argv[0], "env", 4) == 0)
-        return (builtin_env(cmd->argv, envp));
-    if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
-        return (builtin_cd(cmd->argv, envp));
-    return (127);
+        return builtin_env(cmd->argv, sh);
+    
+    /* builtins that must run in parent are ignored here */
+    return 127;
 }
 
-int exec_builtin_parent(t_cmd *cmd, char **envp)
+int exec_builtin_parent(t_cmd *cmd, t_shell *sh)
 {
     if (!cmd || !cmd->argv || !cmd->argv[0])
         return 1;
-
     if (ft_strncmp(cmd->argv[0], "cd", 3) == 0)
-        return (builtin_cd(cmd->argv, envp));
-
-    /*if (ft_strncmp(cmd->argv[0], "export", 7) == 0)
-        return (builtin_export(cmd->argv, envp));
-
+        return builtin_cd(cmd->argv, sh);
+    if (ft_strncmp(cmd->argv[0], "export", 7) == 0)
+        return builtin_export(cmd->argv, sh);
     if (ft_strncmp(cmd->argv[0], "unset", 6) == 0)
-        return (builtin_unset(cmd->argv, envp));*/
-
-    return (127);
+        return builtin_unset(cmd->argv, sh);
+    if (ft_strncmp(cmd->argv[0], "exit", 5) == 0)
+        return builtin_exit(cmd->argv, sh);
+    return 127;
 }
 

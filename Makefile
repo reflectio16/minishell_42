@@ -16,14 +16,19 @@ LIBFT_DIR	=	Libft
 PARSING_DIR	=	$(SRC_DIR)/parsing
 EXEC_DIR	=	$(SRC_DIR)/exec
 BUILTIN_DIR	=	$(SRC_DIR)/builtin
+SHELL_DIR	=	$(SRC_DIR)/shell
 UTILS_DIR	=	$(SRC_DIR)/utils
 
 # Source files
 SRC_FILES	=	$(SRC_DIR)/main.c \
+				$(SHELL_DIR)/init_shell.c \
 				$(BUILTIN_DIR)/ft_cd.c \
 				$(BUILTIN_DIR)/ft_echo.c \
 				$(BUILTIN_DIR)/ft_env.c \
 				$(BUILTIN_DIR)/ft_pwd.c \
+				$(BUILTIN_DIR)/ft_export.c \
+				$(BUILTIN_DIR)/ft_unset.c \
+				$(BUILTIN_DIR)/ft_exit.c \
 				$(PARSING_DIR)/parser.c \
 				$(PARSING_DIR)/parse_input.c \
 				$(PARSING_DIR)/lexer.c \
@@ -37,6 +42,7 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(UTILS_DIR)/general.c \
 				$(UTILS_DIR)/parser_utils.c \
 				$(UTILS_DIR)/builtin_utils.c \
+				$(UTILS_DIR)/env_utils.c \
 				$(UTILS_DIR)/signals.c \
 				$(UTILS_DIR)/errors.c
 

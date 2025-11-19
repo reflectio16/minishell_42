@@ -24,7 +24,7 @@ static void setup_pipes(t_cmd *cmd, int *prev_fd, int fd[2])
     }
 }
 
-static void	child_process(t_cmd *cmd, char **envp, int *prev_fd, int fd[2])
+static void	child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2])
 {
 	int	status;
 
@@ -39,11 +39,11 @@ static void	child_process(t_cmd *cmd, char **envp, int *prev_fd, int fd[2])
 	fflush(stdout);
 
 	setup_pipes(cmd, prev_fd, fd);
-	if (apply_redirections(cmd) == -1)
+	if (apply_redirections(cmd, sh) == -1)
 		exit(1);
 	if (is_builtin(cmd->argv[0]))
 	{
-		status = exec_builtin_child(cmd, envp);
+		status = exec_builtin_child(cmd, sh);
 		exit(status);
 	}
 	execvp(cmd->argv[0], cmd->argv);
@@ -64,13 +64,13 @@ static void	parent_process(t_cmd *cmd, int *prev_fd, int fd[2])
 		*prev_fd = -1;
 }
 
-void	execute_command(t_cmd *cmd, char **envp, int *prev_fd)
+void	execute_command(t_cmd *cmd, t_shell *sh, int *prev_fd)
 {
 	int		fd[2];
 	pid_t	pid;
 
 	if (!cmd || !cmd->argv || !cmd->argv[0])
-        return;
+        return ;
 	if (cmd->next && pipe(fd) == -1)
 		return (perror("pipe"));
 	pid = fork();
@@ -85,10 +85,15 @@ if (pid == -1)
         return;
     }
 	if (pid == 0)
-		child_process(cmd, envp, prev_fd, fd);
+		child_process(cmd, sh, prev_fd, fd);
 	else
 	{
-		g_shell->last_pid = pid;
-		parent_process(cmd, prev_fd, fd);
+		sh->last_status = 0;
+        parent_process(cmd, prev_fd, fd);
+        waitpid(pid, &sh->last_status, 0);
+        if (WIFEXITED(sh->last_status))
+            sh->last_status = WEXITSTATUS(sh->last_status);
+        else if (WIFSIGNALED(sh->last_status))
+            sh->last_status = 128 + WTERMSIG(sh->last_status);
 	}
 }
