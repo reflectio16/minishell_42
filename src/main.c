@@ -34,10 +34,8 @@ int main(int argc, char **argv, char **envp)
             free(input);
             continue ;
         }
-
         if (*input)
             add_history(input);
-
         // Tokenize input
         tokens = NULL;
         if (!lexer(&tokens, input))
@@ -49,7 +47,6 @@ int main(int argc, char **argv, char **envp)
         // Debug: print tokens
         // print_tokens(tokens);
 
-        // Parse tokens into commands
         cmds = parse_tokens(tokens);
         if (!cmds)
         {
@@ -68,13 +65,10 @@ int main(int argc, char **argv, char **envp)
         }
         // Execute pipeline (handles parent/child builtins)
         execute_pipeline(cmds, &sh);
-
-        // Free all allocated memory
         free_tokens(tokens);
         free_cmds(cmds);
         free(input);
     }
-    // Clear readline history
     rl_clear_history();
     free_shell(&sh);
     return (sh.last_status);
