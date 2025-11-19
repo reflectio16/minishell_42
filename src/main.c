@@ -48,10 +48,10 @@ int main(int argc, char **argv, char **envp)
         // print_tokens(tokens);
 
         cmds = parse_tokens(tokens);
+        free_tokens(tokens);
         if (!cmds)
         {
             fprintf(stderr, "Error: failed to parse tokens\n");
-            free_tokens(tokens);
             free(input);
             continue ;
         }
