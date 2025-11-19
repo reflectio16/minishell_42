@@ -6,6 +6,7 @@ int main(int argc, char **argv, char **envp)
     char    *input;
     t_token *tokens;
     t_cmd   *cmds;
+    t_cmd   *tmp;
 
     (void)argc;
     (void)argv;
@@ -16,7 +17,6 @@ int main(int argc, char **argv, char **envp)
         perror("init_shell");
         return 1;
     }
-
     while (1)
     {
         // Set signal handlers
@@ -26,28 +26,26 @@ int main(int argc, char **argv, char **envp)
 
         input = readline("minishell> ");
         if (!input)
-            break; // EOF (Ctrl+D)
-
+            break ; // EOF (Ctrl+D)
         // Ctrl+C pressed
         if (g_signal == SIGINT)
         {
             sh.last_status = 130;
             free(input);
-            continue;
+            continue ;
         }
 
         if (*input)
             add_history(input);
 
-        // Lexical analysis
+        // Tokenize input
         tokens = NULL;
         if (!lexer(&tokens, input))
         {
             fprintf(stderr, "Error: memory allocation failed in lexer\n");
             free(input);
-            continue;
+            continue ;
         }
-
         // Debug: print tokens
         // print_tokens(tokens);
 
@@ -58,12 +56,16 @@ int main(int argc, char **argv, char **envp)
             fprintf(stderr, "Error: failed to parse tokens\n");
             free_tokens(tokens);
             free(input);
-            continue;
+            continue ;
         }
-
         // Debug: print commands
         // print_commands(cmds);
-
+        tmp = cmds;
+        while (tmp)
+        {
+            expand_variables(tmp, &sh);
+            tmp = tmp->next;
+        }
         // Execute pipeline (handles parent/child builtins)
         execute_pipeline(cmds, &sh);
 
@@ -72,12 +74,8 @@ int main(int argc, char **argv, char **envp)
         free_cmds(cmds);
         free(input);
     }
-
     // Clear readline history
     rl_clear_history();
-
-    // Free shell environment
     free_shell(&sh);
-
-    return sh.last_status;
+    return (sh.last_status);
 }

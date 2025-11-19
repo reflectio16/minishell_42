@@ -132,6 +132,9 @@ int     builtin_export(char **argv, t_shell *sh);
 int     builtin_unset(char **argv, t_shell *sh);
 int     builtin_exit(char **argv, t_shell *sh);
 
+/* Expansion */
+void    expand_variables(t_cmd *cmd, t_shell *sh);
+
 /* Shell */
 int     init_shell(t_shell *sh, char **envp);
 

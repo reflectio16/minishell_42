@@ -16,6 +16,7 @@ LIBFT_DIR	=	Libft
 PARSING_DIR	=	$(SRC_DIR)/parsing
 EXEC_DIR	=	$(SRC_DIR)/exec
 BUILTIN_DIR	=	$(SRC_DIR)/builtin
+EXPAND_DIR	=	$(SRC_DIR)/expansion
 SHELL_DIR	=	$(SRC_DIR)/shell
 UTILS_DIR	=	$(SRC_DIR)/utils
 
@@ -36,6 +37,7 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(EXEC_DIR)/apply_redirections.c \
 				$(EXEC_DIR)/execute_cmd.c \
 				$(EXEC_DIR)/heredoc.c \
+				$(EXPAND_DIR)/expand_vars.c \
 				$(UTILS_DIR)/lexer_utils.c \
 				$(UTILS_DIR)/debug_print.c \
 				$(UTILS_DIR)/cleanup.c \
