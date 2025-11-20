@@ -52,20 +52,22 @@ static void	handle_parent(t_exec_ctx *ctx)
 		ctx->sh->last_status = 128 + WTERMSIG(ctx->sh->last_status);
 }
 
-void	execute_command(t_cmd *cmd, t_shell *sh, int *prev_fd)
+void    execute_command(t_cmd *cmd, t_shell *sh, int *prev_fd)
 {
-	t_exec_ctx	ctx;
+    t_exec_ctx ctx;
 
-	ctx.cmd = cmd;
-	ctx.sh = sh;
-	ctx.prev_fd = prev_fd;
-	if (cmd->next && pipe(ctx.fd) == -1)
-		return (perror("pipe"));
-	ctx.pid = fork();
-	if (ctx.pid == -1)
-		return (perror("fork"));
-	if (ctx.pid == 0)
-		child_process(cmd, sh, prev_fd, ctx.fd);
-	else
-		handle_parent(&ctx);
+    ctx.cmd = cmd;
+    ctx.sh = sh;
+    ctx.prev_fd = prev_fd;
+
+    if (!open_pipe_if_needed(cmd, ctx.fd))
+        return;
+    ctx.pid = fork_child(ctx.fd, cmd);
+    if (ctx.pid == -1)
+        return;
+
+    if (ctx.pid == 0)
+        child_process(cmd, sh, prev_fd, ctx.fd);
+    else
+        handle_parent(&ctx);
 }

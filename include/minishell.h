@@ -117,8 +117,10 @@ char	*alloc_heredoc_buf(void);
 int     write_heredoc_line(int fd, char *line);
 void	child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2]);
 void	parent_process(t_cmd *cmd, int *prev_fd, int fd[2]);
+void    setup_pipes(t_cmd *cmd, int *prev_fd, int fd[2]);
 
 // signals.c
+void	set_shell_ptr(t_shell *sh);
 void    handle_sigint(int signo);
 
 /* Errors*/

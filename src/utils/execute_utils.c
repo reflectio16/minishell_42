@@ -32,32 +32,35 @@ int	write_heredoc_line(int fd, char *line)
 	free(line);
 	return (1);
 }
-
-void	child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2])
+static void setup_pipes_child(t_cmd *cmd, int *prev_fd, int fd[2])
 {
-	int	status;
+    if (*prev_fd != -1)          // This command receives input
+    {
+        dup2(*prev_fd, STDIN_FILENO);
+        close(*prev_fd);
+    }
 
-	if (!cmd || !cmd->argv || !cmd->argv[0])
-		exit(1);
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	printf("[DEBUG] Executing command: %s\n", cmd->argv[0]);
-	/* DEBUG */
-	for (int i = 0; cmd->argv[i]; i++)
-	printf("  argv[%d] = '%s'\n", i, cmd->argv[i]);
-	fflush(stdout); // WILL DELETE WHOLE FOR LOOP
+    if (cmd->next)               // This command outputs into a pipe
+    {
+        close(fd[0]);
+        dup2(fd[1], STDOUT_FILENO);
+        close(fd[1]);
+    }
+}
 
-	setup_pipes(cmd, prev_fd, fd);
-	if (apply_redirections(cmd, sh) == -1)
-		exit(1);
-	if (is_builtin(cmd->argv[0]))
-	{
-		status = exec_builtin_child(cmd, sh);
-		exit(status);
-	}
-	execvp(cmd->argv[0], cmd->argv);
-	perror(cmd->argv[0]);
-	exit(127);
+void child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2])
+{
+    signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
+
+    setup_pipes_child(cmd, prev_fd, fd);
+    if (apply_redirections(cmd, sh) == -1)
+        exit(1);
+    if (is_builtin(cmd->argv[0]))
+        exit(exec_builtin_child(cmd, sh));
+    execvp(cmd->argv[0], cmd->argv);
+    perror(cmd->argv[0]);
+    exit(127);
 }
 
 void	parent_process(t_cmd *cmd, int *prev_fd, int fd[2])

@@ -22,7 +22,7 @@ static t_shell	**get_shell_ptr_addr(void)
 	return (&sh);
 }
 
-static void	set_shell_ptr(t_shell *sh)
+void	set_shell_ptr(t_shell *sh)
 {
 	t_shell	**ptr;
 
