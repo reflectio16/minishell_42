@@ -1,8 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   apply_redirections.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: meelma <meelma@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/20 14:00:36 by meelma            #+#    #+#             */
+/*   Updated: 2025/11/20 14:01:59 by meelma           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 static int	open_infile(t_redir *r)
 {
-	int	fd = open(r->filename, O_RDONLY);
+	int	fd;
+
+	fd = open(r->filename, O_RDONLY);
 	if (fd == -1)
 		perror(r->filename);
 	else
@@ -15,7 +29,9 @@ static int	open_infile(t_redir *r)
 
 static int	open_outfile(t_redir *r, int flags)
 {
-	int	fd = open(r->filename, flags, 0644);
+	int	fd;
+
+	fd = open(r->filename, flags, 0644);
 	if (fd == -1)
 		perror(r->filename);
 	else

@@ -68,6 +68,14 @@ typedef struct s_shell
     int     last_status;
 }   t_shell;
 
+typedef struct s_exec_ctx
+{
+    t_cmd   *cmd;
+    t_shell *sh;
+    int     *prev_fd;
+    int     fd[2];
+    pid_t   pid;
+}   t_exec_ctx;
 
 /* lexer.c */
 bool    lexer(t_token **tokens, char *input);
@@ -95,11 +103,20 @@ int     is_builtin(char *cmd);
 int     builtin_is_parent(char *cmd_name);
 int     exec_builtin_child(t_cmd *cmd, t_shell *sh);
 int     exec_builtin_parent(t_cmd *cmd, t_shell *sh);
+
 // env_utils.c
-char    *get_env_value(char **envp, const char *name);
-int     count_env_vars(char **envp);
 int     set_env_var(char ***envp, const char *key, const char *value);
 int     unset_env_var(char ***envp, const char *key);
+//env_utils_02.c
+char    *get_env_value(char **envp, const char *name);
+int     count_env_vars(char **envp);
+char    *build_env_var(const char *key, const char *value);
+
+// execute_utils.c
+char	*alloc_heredoc_buf(void);
+int     write_heredoc_line(int fd, char *line);
+void	child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2]);
+void	parent_process(t_cmd *cmd, int *prev_fd, int fd[2]);
 
 // signals.c
 void    handle_sigint(int signo);

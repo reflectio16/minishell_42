@@ -1,17 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cleanup.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: meelma <meelma@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/20 15:07:40 by meelma            #+#    #+#             */
+/*   Updated: 2025/11/20 15:10:03 by meelma           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 // Clean up allocated memory for the token list
-void    free_tokens(t_token *tokens)
+void	free_tokens(t_token *tokens)
 {
-    t_token *tmp;
+	t_token	*tmp;
 
-    while (tokens)
-    {
-        tmp = tokens->next;
-        free (tokens->value);
-        free (tokens);
-        tokens = tmp;
-    }
+	while (tokens)
+	{
+		tmp = tokens->next;
+		free (tokens->value);
+		free (tokens);
+		tokens = tmp;
+	}
 }
 
 static void	free_redirs(t_redir *redir)

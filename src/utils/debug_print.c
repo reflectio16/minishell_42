@@ -1,57 +1,71 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   debug_print.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: meelma <meelma@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/20 14:56:39 by meelma            #+#    #+#             */
+/*   Updated: 2025/11/20 15:02:28 by meelma           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 // Prints all redirections in a linked list of redirection nodes.
-
-void    print_redirs(t_redir *r)
+void	print_redirs(t_redir *r)
 {
-    const char *type_str;
+	const char	*type_str;
 
-    type_str = "UNKNOWN";
-    while (r)
-    {
-        if (r->type == T_REDIR_IN) type_str = "REDIR_IN";
-		else if (r->type == T_REDIR_OUT) type_str = "REDIR_OUT"; 
-		else if (r->type == T_APPEND) type_str = "APPEND";
-		else if (r->type == T_HEREDOC) type_str = "HEREDOC";
-        printf("    [REDIR] type=%s file=%s\n", type_str, r->filename);
-        r = r->next;
-    }
+	type_str = "UNKNOWN";
+	while (r)
+	{
+		if (r->type == T_REDIR_IN)
+			type_str = "REDIR_IN";
+		else if (r->type == T_REDIR_OUT)
+			type_str = "REDIR_OUT";
+		else if (r->type == T_APPEND)
+			type_str = "APPEND";
+		else if (r->type == T_HEREDOC)
+			type_str = "HEREDOC";
+		printf("    [REDIR] type=%s file=%s\n", type_str, r->filename);
+		r = r->next;
+	}
 }
 
 // Prints the entire command pipeline structure in a human readable format.
-
-void    print_commands(t_cmd *cmd)
+void	print_commands(t_cmd *cmd)
 {
-    int i;
-    int j;
+	int	i;
+	int	j;
 
-    i = 1;
-    while (cmd)
-    {
-        printf("Command #%d:\n", i++);
-        if (cmd->argv)
-        {
-            j = 0;
-            while (cmd->argv[j])
-            {
-                printf("    argv[%d] = %s\n", j, cmd->argv[j]);
-                j++;
-            }
-                
-        }
-        print_redirs(cmd->redirs);
-        cmd = cmd->next;
-    }
+	i = 1;
+	while (cmd)
+	{
+		printf("Command #%d:\n", i++);
+		if (cmd->argv)
+		{
+			j = 0;
+			while (cmd->argv[j])
+			{
+				printf("    argv[%d] = %s\n", j, cmd->argv[j]);
+				j++;
+			}
+		}
+		print_redirs(cmd->redirs);
+		cmd = cmd->next;
+	}
 }
 
 // Debug function to display the token list
-void    print_tokens(t_token *tokens)
+void	print_tokens(t_token *tokens)
 {
-    static const char *type_str[]
-        = {"WORD", "PIPE", "REDIR_IN", "REDIR_OUT", "APPEND", "HEREDOC"};
-    while (tokens)
-    {
-        printf("[%s] \"%s\"\n", type_str[tokens->type], tokens->value);
-        tokens = tokens->next;
-    }
+	static const char	*type_str[]
+		= {"WORD", "PIPE", "REDIR_IN", "REDIR_OUT", "APPEND", "HEREDOC"};
+	
+	while (tokens)
+	{
+		printf("[%s] \"%s\"\n", type_str[tokens->type], tokens->value);
+		tokens = tokens->next;
+	}
 }

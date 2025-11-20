@@ -45,6 +45,8 @@ SRC_FILES	=	$(SRC_DIR)/main.c \
 				$(UTILS_DIR)/parser_utils.c \
 				$(UTILS_DIR)/builtin_utils.c \
 				$(UTILS_DIR)/env_utils.c \
+				$(UTILS_DIR)/env_utils_02.c \
+				$(UTILS_DIR)/execute_utils.c \
 				$(UTILS_DIR)/signals.c \
 				$(UTILS_DIR)/errors.c
 

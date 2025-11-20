@@ -1,43 +1,62 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_pipeline.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: meelma <meelma@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/20 14:27:11 by meelma            #+#    #+#             */
+/*   Updated: 2025/11/20 14:28:37 by meelma           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-void execute_pipeline(t_cmd *cmds, t_shell *sh)
+static void	wait_pipeline(t_shell *sh)
 {
-    int prev_fd;
-    int status;
+	int	status;
 
-    if (!cmds)
-        return;
-    prev_fd = -1;
-    // Single command, parent-only builtin
-    if (!cmds->next && is_builtin(cmds->argv[0])
-        && builtin_is_parent(cmds->argv[0]))
-    {
-        if (apply_redirections(cmds, sh) == -1)
-        {
-            sh->last_status = 1;
-            return ;
-        }
-        sh->last_status = exec_builtin_parent(cmds, sh);
-        return ;
-    }
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	while (wait(&status) > 0)
+	{
+		if (WIFEXITED(status))
+			sh->last_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			sh->last_status = 128 + WTERMSIG(status);
+	}
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
+}
 
-    // Multiple commands / pipeline
-    while (cmds)
-    {
-        execute_command(cmds, sh, &prev_fd);
-        cmds = cmds->next;
-    }
-    signal(SIGINT, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
+static int	run_parent_builtin(t_cmd *cmd, t_shell *sh)
+{
+	if (!cmd || cmd->next)
+		return (0);
+	if (!is_builtin(cmd->argv[0]) || !builtin_is_parent(cmd->argv[0]))
+		return (0);
+	if (apply_redirections(cmd, sh) == -1)
+	{
+		sh->last_status = 1;
+		return (1);
+	}
+	sh->last_status = exec_builtin_parent(cmd, sh);
+	return (1);
+}
 
-    while (wait(&status) > 0)
-    {
-        if (WIFEXITED(status))
-            sh->last_status = WEXITSTATUS(status);
-        else if (WIFSIGNALED(status))
-            sh->last_status = 128 + WTERMSIG(status);
-    }
-    // After pipeline, reset signals
-    signal(SIGINT, handle_sigint);
-    signal(SIGQUIT, SIG_IGN);
+void	execute_pipeline(t_cmd *cmds, t_shell *sh)
+{
+	int	prev_fd;
+
+	if (!cmds)
+		return ;
+	if (run_parent_builtin(cmds, sh))
+		return ;
+	prev_fd = -1;
+	while (cmds)
+	{
+		execute_command(cmds, sh, &prev_fd);
+		cmds = cmds->next;
+	}
+	wait_pipeline(sh);
 }
