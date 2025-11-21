@@ -35,37 +35,19 @@ void	add_token(t_token **lst, t_token *new)
 }
 
 // Removes surrounding and inner quotes from a token value
-char	*remove_quotes(char *str)
+char *strip_outer_quotes(const char *str)
 {
-	char	*res;
-	int		i;
-	int		j;
-	char	quote;
+    int len;
+    char *out;
 
-	res = malloc(sizeof(char) * (ft_strlen(str) + 1));
-	if (!res)
-	{
-		free(str);
-		return (NULL);
-	}
-	i = 0;
-	j = 0;
-	quote = 0;
-	while (str[i])
-	{
-		if (!quote && (str[i] == '"' || str[i] == '\''))
-			quote = str[i++];
-		else if (quote && str[i] == quote)
-		{
-			quote = 0;
-			i++;
-		}
-		else
-			res[j++] = str[i++];
-	}
-	res[j] = 0;
-	free(str);
-	return (res);
+    len = ft_strlen(str);
+    if ((str[0] == '"' && str[len - 1] == '"')
+        || (str[0] == '\'' && str[len - 1] == '\''))
+    {
+        out = ft_substr(str, 1, len - 2);
+        return (out);
+    }
+    return (ft_strdup(str));
 }
 
 bool	append_token(t_token **tokens, char *value, t_token_type type)
@@ -79,18 +61,22 @@ bool	append_token(t_token **tokens, char *value, t_token_type type)
 	return (true);
 }
 
-bool	add_word_token(t_token **tokens, const char *input, int *i)
+bool add_word_token(t_token **tokens, const char *input, int *i)
 {
-	char	*word;
-	char	*clean;
+    char *raw;
+    char *clean;
 
-	word = extract_word(input, i);
-	if (!word)
-		return (false);
-	clean = remove_quotes(word);
-	if (!clean)
-		return (false);
-	if (!append_token(tokens, clean, T_WORD))
-		return (false);
-	return (true);
+    raw = extract_word(input, i);
+    if (!raw)
+        return (false);
+    clean = strip_outer_quotes(raw);
+    free(raw);
+    if (!clean)
+        return (false);
+    if (!append_token(tokens, clean, T_WORD))
+    {
+        free(clean);
+        return (false);
+    }
+    return (true);
 }

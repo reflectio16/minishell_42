@@ -89,7 +89,7 @@ void    free_tokens(t_token *tokens);
 void	free_cmds(t_cmd *cmd);
 int     is_special_char(char c);
 int     is_space(char c);
-char    *remove_quotes(char *str);
+char    *strip_outer_quotes(const char *str);
 bool    add_word_token(t_token **tokens, const char *input, int *i);
 bool    append_token(t_token **tokens, char *value, t_token_type type);
 void	print_tokens(t_token *tokens);
@@ -117,7 +117,7 @@ char	*alloc_heredoc_buf(void);
 int     write_heredoc_line(int fd, char *line);
 void	child_process(t_cmd *cmd, t_shell *sh, int *prev_fd, int fd[2]);
 void	parent_process(t_cmd *cmd, int *prev_fd, int fd[2]);
-void    setup_pipes(t_cmd *cmd, int *prev_fd, int fd[2]);
+
 
 // signals.c
 void	set_shell_ptr(t_shell *sh);
